@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -23,15 +23,19 @@ func main() {
 		defer fp.Close()
 	}
 
-	reader := bufio.NewReaderSize(fp, 4096)
-	for {
-		line, _, err := reader.ReadLine()
-		fmt.Println(string(line))
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			panic(err)
-		}
+	fmt.Println("start")
+	//	lines := make([]string, 0)
+
+	//	my_lines := make([]string, 120)
+	scanner := bufio.NewScanner(fp)
+	for i := 0; scanner.Scan(); i++ {
+		r := strings.NewReplacer("\n", "")
+		my_line := strings.Split(r.Replace(scanner.Text()), ";")
+		fmt.Println("----")
+		fmt.Println(my_line)
+		fmt.Println(len(my_line))
+	}
+	if err := scanner.Err(); err != nil {
+		panic(err)
 	}
 }
-
