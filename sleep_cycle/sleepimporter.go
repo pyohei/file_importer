@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"os"
 	"strings"
 )
@@ -27,6 +29,23 @@ func main() {
 	//	lines := make([]string, 0)
 
 	//	my_lines := make([]string, 120)
+	//cnn := sql.Open("mysql", "developer:developer@tcp(192.168.0.90:3306)/hatena")
+	cnn, err := sql.Open("mysql", "developer:developer@tcp(192.168.0.90:3306)/hatena?charset=utf8")
+	rows, err := cnn.Query("select user_name from users;")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var user_name string
+		if err := rows.Scan(&user_name); err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(user_name)
+	}
+	if err := rows.Err(); err != nil {
+		fmt.Println(err)
+	}
 	bbb := make([][]string, 0, 200)
 	scanner := bufio.NewScanner(fp)
 	for i := 0; scanner.Scan(); i++ {
