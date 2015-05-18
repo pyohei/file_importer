@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-	fmt.Println(fileReader("sleepdata.csv"))
 	var fp *os.File
 	var err error
 
@@ -25,12 +24,13 @@ func main() {
 		}
 		defer fp.Close()
 	}
+	// 上記のelseをなくし、ここからファイルの読み込み->
+	// 一覧の取得->DBへの追加をするようにする
+	// それができたら、ひとまずこのbatchは終わりとする。
+	// 統計結果を出すのはまた別。
+	fmt.Println(fileReader("sleepdata.csv"))
 
 	fmt.Println("start")
-	//	lines := make([]string, 0)
-
-	//	my_lines := make([]string, 120)
-	//cnn := sql.Open("mysql", "developer:developer@tcp(192.168.0.90:3306)/hatena")
 	cnn, err := sql.Open(
 		"mysql",
 		"developer:developer@tcp(192.168.0.90:3306)/sleep_cycle?charset=utf8")
