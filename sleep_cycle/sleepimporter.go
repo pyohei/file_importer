@@ -28,6 +28,7 @@ func main() {
 	// 一覧の取得->DBへの追加をするようにする
 	// それができたら、ひとまずこのbatchは終わりとする。
 	// 統計結果を出すのはまた別。
+	// SQLの見直しも必要
 	fmt.Println(fileReader("sleepdata.csv"))
 
 	fmt.Println("start")
