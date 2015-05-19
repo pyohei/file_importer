@@ -13,25 +13,30 @@ func main() {
 	var fp *os.File
 	var err error
 
-	if len(os.Args) < 2 {
-		fmt.Println("Insert file name or <C-C>.")
-		fp = os.Stdin
-	} else {
-		fmt.Printf(">> read file %s\n", os.Args[1])
-		fp, err = os.Open(os.Args[1])
-		if err != nil {
-			panic(err)
-		}
-		defer fp.Close()
+	fmt.Println("---- start -----")
+	if len(os.Args) != 2 {
+		fmt.Println("You should hava argument with filename")
+		os.Exit(1)
 	}
-	// 上記のelseをなくし、ここからファイルの読み込み->
-	// 一覧の取得->DBへの追加をするようにする
-	// それができたら、ひとまずこのbatchは終わりとする。
-	// 統計結果を出すのはまた別。
-	// SQLの見直しも必要
-	fmt.Println(fileReader("sleepdata.csv"))
+	//fmt.Printf(">> read file %s\n", os.Args[1])
+	// if possible, return with iterable
+	filelines := fileReader(os.Args[1])
+	//fmt.Println(filelines)
 
-	fmt.Println("start")
+	/*
+		// 上記のelseをなくし、ここからファイルの読み込み->
+		// 一覧の取得->DBへの追加をするようにする
+		// それができたら、ひとまずこのbatchは終わりとする。
+		// 統計結果を出すのはまた別。
+		// SQLの見直しも必要
+	*/
+
+	for i, line := range filelines {
+		if i == 0 {
+			continue
+		}
+		fmt.Println(i, line)
+	}
 	cnn, err := sql.Open(
 		"mysql",
 		"developer:developer@tcp(192.168.0.90:3306)/sleep_cycle?charset=utf8")
