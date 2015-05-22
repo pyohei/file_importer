@@ -3,9 +3,11 @@ package main
 import (
 	"bufio"
 	"database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -74,6 +76,10 @@ func fileReader(filepath string) [][]string {
 }
 
 func insertRecord(rec []string) error {
+	var cRate string
+	var sMinute int
+
+	fmt.Println(rec)
 	conn, err := sql.Open(
 		"mysql",
 		"developer:developer@tcp(192.168.0.90:3306)/sleep_cycle?charset=utf8")
@@ -81,11 +87,29 @@ func insertRecord(rec []string) error {
 		return err
 	}
 	stmt, err := conn.Prepare(
-		"INSERT sleep SET sleep_from=?, sleep_to=?, sleep_len=?")
+		"INSERT sleep SET sleep_from=?, sleep_to=?, confort_rate=?, sleep_minute=?")
 	if err != nil {
 		return err
 	}
-	res, err := stmt.Exec(rec[0], rec[1], rec[3])
+	// Confort Rate
+	if rec[2] == "" {
+		cRate = "0"
+	} else {
+		cRate = strings.Replace(rec[2], "%", "", -1)
+	}
+	// Sleep minute
+	if rec[3] == "" {
+		sMinute = 0
+	} else {
+		sTimes := strings.Split(rec[3], ":")
+		sHour, _ := strconv.Atoi(sTimes[0])
+		sMin, _ := strconv.Atoi(sTimes[1])
+		sMinute = sHour*60 + sMin
+	}
+	fmt.Println(sMinute)
+	// sleep_feeling, pulsation, memo
+
+	res, err := stmt.Exec(rec[0], rec[1], cRate, sMinute)
 	_ = res
 	if err != nil {
 		return err
