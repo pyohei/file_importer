@@ -8,7 +8,7 @@ CREATE TABLE sleep (
     confort_rate tinyint(3) DEFAULT null,
     sleep_minute int(6) DEFAULT null,
     sleep_feeling tinyint(3) DEFAULT null,
-    pulsation tinyint(3) DEFAULT null,
+    pulsation tinyint(3) DEFAULT 0,
     memo varchar(255) DEFAULT null,
     walk_count int(10) DEFAULT null,
     regist_time datetime DEFAULT NULL,
