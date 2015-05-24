@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const LOG_FILE = "sleepimporter.log"
@@ -23,16 +24,7 @@ func main() {
 		log.Println("You should hava argument with filename")
 		os.Exit(1)
 	}
-	//fmt.Printf(">> read file %s\n", os.Args[1])
-	// if possible, return with iterable
 	filelines := fileReader(os.Args[1])
-	//fmt.Println(filelines)
-
-	/*
-		// それができたら、ひとまずこのbatchは終わりとする。
-		// 統計結果を出すのはまた別。
-		// SQLの見直しも必要
-	*/
 
 	for i, line := range filelines {
 		fmt.Println(i)
@@ -113,7 +105,7 @@ func insertRecord(rec []string) error {
 		return err
 	}
 	stmt, err := conn.Prepare(
-		"INSERT sleep SET sleep_from=?, sleep_to=?, confort_rate=?, sleep_minute=?")
+		"INSERT sleep SET sleep_from=?, sleep_to=?, confort_rate=?, sleep_minute=?, sleep_feeling=?, memo=?, pulsation=?, walk_count=?, regist_time=?")
 	if err != nil {
 		return err
 	}
@@ -132,12 +124,37 @@ func insertRecord(rec []string) error {
 		sMin, _ := strconv.Atoi(sTimes[1])
 		sMinute = sHour*60 + sMin
 	}
-
-	res, err := stmt.Exec(rec[0], rec[1], cRate, sMinute)
+	now := time.Now()
+	feelNum := convertFeeling(rec[4])
+	res, err := stmt.Exec(
+		rec[0], rec[1], cRate, sMinute,
+		feelNum, rec[5], convertNull(rec[6]),
+		rec[7], now.Format("2006-01-02 15:04:05"))
 	_ = res
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 	return nil
+}
+
+func convertNull(rec string) string {
+	if rec == "" {
+		return "null"
+	}
+	return rec
+}
+
+func convertFeeling(feeling string) int {
+	var feelNum int
+	if feeling == ":(" {
+		feelNum = 1
+	} else if feeling == ":|" {
+		feelNum = 2
+	} else if feeling == ":)" {
+		feelNum = 3
+	} else {
+		feelNum = 0
+	}
+	return feelNum
 }
