@@ -6,7 +6,7 @@ CREATE TABLE sleep (
     sleep_from datetime DEFAULT null,
     sleep_to datetime DEFAULT null,
     confort_rate tinyint(3) DEFAULT null,
-    sleep_minute tinyint(4) DEFAULT null,
+    sleep_minute int(6) DEFAULT null,
     sleep_feeling tinyint(3) DEFAULT null,
     pulsation tinyint(3) DEFAULT null,
     memo varchar(255) DEFAULT null,
