@@ -35,7 +35,13 @@ func main() {
 	*/
 
 	for i, line := range filelines {
+		fmt.Println(i)
 		if i == 0 {
+			continue
+		}
+		hasRec := hasRecord(line)
+		if hasRec {
+			log.Printf("Line: %v has already record!!", i)
 			continue
 		}
 		err := insertRecord(line)
@@ -57,7 +63,7 @@ func fileReader(filepath string) [][]string {
 		panic(err)
 	}
 	defer fp.Close()
-	bbb := make([][]string, 0, 200)
+	bbb := make([][]string, 0, 1000)
 	scanner := bufio.NewScanner(fp)
 	for i := 0; scanner.Scan(); i++ {
 		r := strings.NewReplacer("\n", "")
@@ -75,11 +81,31 @@ func fileReader(filepath string) [][]string {
 	return bbb
 }
 
+func hasRecord(rec []string) bool {
+	var sCount int
+
+	conn, err := sql.Open(
+		"mysql",
+		"developer:developer@tcp(192.168.0.90:3306)/sleep_cycle?charset=utf8")
+	row := conn.QueryRow(
+		"SELECT count(*) as sCount FROM sleep WHERE sleep_from = ? and sleep_to =?",
+		rec[0],
+		rec[1])
+	err = row.Scan(&sCount)
+	conn.Close()
+	if err != nil {
+		panic(err)
+	}
+	if sCount > 0 {
+		return true
+	}
+	return false
+}
+
 func insertRecord(rec []string) error {
 	var cRate string
 	var sMinute int
 
-	fmt.Println(rec)
 	conn, err := sql.Open(
 		"mysql",
 		"developer:developer@tcp(192.168.0.90:3306)/sleep_cycle?charset=utf8")
@@ -106,8 +132,6 @@ func insertRecord(rec []string) error {
 		sMin, _ := strconv.Atoi(sTimes[1])
 		sMinute = sHour*60 + sMin
 	}
-	fmt.Println(sMinute)
-	// sleep_feeling, pulsation, memo
 
 	res, err := stmt.Exec(rec[0], rec[1], cRate, sMinute)
 	_ = res
