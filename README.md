@@ -9,7 +9,7 @@ This tool is for myself, and if you want to use it, be careful when using.
 1. Install this repository
 1. Create database with `sql/createtable.sql`
 1. Edit `main.go`. Change database connection information.
-1. Execute script with `go run main.go \`filename\``.
+1. Execute script with `go run main.go filename`.  
    You set target file as first argument.
 
 ## Licence
